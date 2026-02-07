@@ -1,14 +1,3 @@
-const chat = document.getElementById("chat");
-const input = document.getElementById("input");
-
-function addMsg(text, cls) {
-  const div = document.createElement("div");
-  div.className = "msg " + cls;
-  div.innerText = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
 async function send() {
   const text = input.value.trim();
   if (!text) return;
@@ -16,12 +5,12 @@ async function send() {
   addMsg(text, "user");
   input.value = "";
 
-  addMsg("Thinking...", "bot");
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: text })
+  });
 
-  // 🔑 API call placeholder
-  // Replace with OpenRouter / Gemini
-  setTimeout(() => {
-    chat.lastChild.remove();
-    addMsg("Hello! I am Nebula AI ✨", "bot");
-  }, 800);
-}
+  const data = await res.json();
+  addMsg(data.choices[0].message.content, "bot");
+    }
